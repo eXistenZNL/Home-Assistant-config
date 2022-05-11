@@ -1,0 +1,60 @@
+version: '3.2'
+
+services:
+  app:
+    image: homeassistant/home-assistant:latest
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config:/config
+      - /home/hawol/.ssh:/root/.ssh
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ha-app.rule=Host(`${BASE_URL}`)
+      - traefik.http.routers.ha-app.tls=true
+      - traefik.http.routers.ha-app.tls.certresolver=letsencrypt
+      - traefik.http.services.ha-app.loadbalancer.server.port=8123
+    networks:
+      - web
+    dns: 172.18.0.100
+
+  zwavejs2mqtt:
+    image: zwavejs/zwavejs2mqtt:latest
+    restart: unless-stopped
+    volumes:
+      - zwavejs2mqtt:/usr/src/app/store
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ha-zwave.rule=Host(`zwave.${BASE_URL}`)
+      - traefik.http.routers.ha-zwave.tls=true
+      - traefik.http.routers.ha-zwave.tls.certresolver=letsencrypt
+      - traefik.http.services.ha-zwave.loadbalancer.server.port=8091
+      - traefik.http.middlewares.ha-zwave-ipwhitelist.ipwhitelist.sourcerange=192.168.1.0/24
+      - traefik.http.routers.ha-zwave.middlewares=ha-zwave-ipwhitelist
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    networks:
+      - web
+    dns: 172.18.0.100
+
+  mqtt:
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/log
+      - ./mosquitto:/mosquitto/config:ro
+    networks:
+      - web
+    ports:
+      - 1883:1883
+
+volumes:
+  mosquitto-data:
+  mosquitto-logs:
+  zwavejs2mqtt:
+
+networks:
+  web:
+    external: true
+
