@@ -2,6 +2,10 @@
 
 [![License](https://img.shields.io/github/license/existenznl/home-assistant-config.svg?style=flat-square)](https://github.com/eXistenZNL/Home-Assistant-Config/blob/master/LICENSE)
 
+<p align="center">
+  <img src="dashboard.png" alt="Dashboard" />
+</p>
+
 ## About
 
 This repository contains the complete configuration for my Home Assistant instance:
