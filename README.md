@@ -2,16 +2,20 @@
 
 [![License](https://img.shields.io/github/license/existenznl/home-assistant-config.svg?style=flat-square)](https://github.com/eXistenZNL/Home-Assistant-Config/blob/master/LICENSE)
 
-<p align="center">
-  <img src="dashboard.png" alt="Dashboard" />
-</p>
-
 ## About
 
 This repository contains the complete configuration for my Home Assistant instance:
 * Infrastructure setup based on Docker Compose
 * Dashboards and themes, stored as JSON exports
 * Home assistant configuration files, mostly YAML
+
+## Environment setup
+
+Home Assistant is most commonly seen as a Raspberry Pi installation called Hass.io, but since I already had a NAS I
+could simply run HA on there. My NAS is set up to run multiple projects simultaneously using Docker Compose and Traefik,
+that's why you find a `docker-compose.yml` file in this project. The labels on the various services in that file are
+there to make Traefik know what to do (mainly show the right container for the right host and manage TLS certificates).
+This means my HA installation is accessible from the web via HTTPS on a public URL.
 
 ## Connected devices
 
