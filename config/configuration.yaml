@@ -1,0 +1,82 @@
+homeassistant:
+  name: eXhome
+  latitude: !secret homeassistant_latitude
+  longitude: !secret homeassistant_longitude
+  elevation: 0
+  unit_system: metric
+  time_zone: Europe/Amsterdam
+  customize: !include customize.yaml
+  customize_glob: !include customize_glob.yaml
+  packages: !include_dir_named packages
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Load the stored scenes
+#scene: !include scenes.yaml
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+http:
+  #base_url: !secret http_base_url
+  use_x_forwarded_for: true
+  trusted_proxies: 172.16.0.0/12
+
+# Discover some devices automatically
+discovery:
+
+# Sensors
+sensor:
+  - platform: afvalwijzer
+    provider: mijnafvalwijzer
+    postal_code: !secret afvalwijzer_zipcode
+    street_number: !secret afvalwijzer_housenumber
+
+logger:
+  default: warning
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+
+frontend:
+  themes:
+    !include_dir_merge_named themes
+
+notify:
+  - name: lametric
+    platform: lametric
+  - name: slack
+    platform: slack
+    api_key: !secret slack_api_key
+    username: "Home Assistant"
+    default_channel: '#homeassistant'
+
+input_boolean:
+  awning_wet:
+    name: The awning got wet because of rain
+    icon: mdi:water-alert
+  sleep_mode:
+    name: Everyone is asleep
+    icon: mdi:sleep
+  disable_automatic_ac:
+    name: Disable automatic AC
+    icon: mdi:snowflake-off
+
+
+lametric:
+  client_id: !secret lametric_client_id
+  client_secret: !secret lametric_client_secret
+
+home_connect:
+  client_id: !secret home_connect_client_id
+  client_secret: !secret home_connect_client_secret
+
+alarm_control_panel:
+  name: Alarm
+  platform: manual
+  code: !secret alarm_code
+  code_arm_required: false
+
+daikin_residential:
+  email: !secret daikin_email
+  password: !secret daikin_password

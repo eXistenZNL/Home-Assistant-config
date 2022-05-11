@@ -1,0 +1,9 @@
+# Ignore everything...
+*
+
+# ...except for yaml files and an example of secrets.yml
+!*.yaml
+!secrets.yaml.dist
+
+# Ignore the real secrets.yaml of course.
+secrets.yaml
