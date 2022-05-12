@@ -17,6 +17,16 @@ that's why you find a `docker-compose.yml` file in this project. The labels on t
 there to make Traefik know what to do (mainly show the right container for the right host and manage TLS certificates).
 This means my HA installation is accessible from the web via HTTPS on a public URL.
 
+## Dashboard setup
+
+The dashboard I created uses the [Noctis](https://github.com/aFFekopp/noctis) theme and is heavily inspired by
+[this](https://www.youtube.com/watch?v=5y6rhwr5Y8c) YouTube video. The main benefit for such a dashboard is that it
+works really well on my mobile phone, which is the main way I interact with Home Assistant.
+
+<p align="center">
+    <img src="dashboard.png" alt="Example of my dashboard" />
+</p>
+
 ## Connected devices
 
 Currently my Home Assistant setup is managing the following devices:
