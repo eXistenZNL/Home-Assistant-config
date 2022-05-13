@@ -1,0 +1,178 @@
+################################################
+## Inputs
+################################################
+
+input_boolean:
+  laundry_washing_machine_full:
+    name: Washing machine is full
+    initial: 'off'
+    icon: mdi:washing-machine-alert
+  laundry_tumble_dryer_full:
+    name: Tumble dryer is full
+    initial: 'off'
+    icon: mdi:tumble-dryer-alert
+
+################################################
+## Templates
+################################################
+
+template:
+  - binary_sensor:
+    - name: "Washing machine"
+      state: "{{ states('sensor.attic_washing_machine_electric_w_value') | float(default=0) > 2 }}"
+      delay_off: 00:01:00
+      icon: mdi:washing-machine
+    - name: "Tumble dryer"
+      state: "{{ states('sensor.attic_dryer_electric_w_value') | float(default=0) > 2 }}"
+      delay_off: 00:01:00
+      icon: mdi:tumble-dryer
+
+################################################
+## Automations
+################################################
+
+automation:
+  - alias: Laundry - Washing machine - Mark as full
+    trigger:
+      platform: state
+      entity_id: binary_sensor.washing_machine
+      to: "on"
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.laundry_washing_machine_full
+
+  - alias: Laundry - Tumble dryer - Mark as full
+    trigger:
+      platform: state
+      entity_id: binary_sensor.tumble_dryer
+      to: "on"
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.laundry_tumble_dryer_full
+
+  - alias: Laundry - Washing machine - Mark as empty
+    trigger:
+      platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: LAUNDRY_MARK_WASHING_MACHINE_EMPTY
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.laundry_washing_machine_full
+
+  - alias: Laundry - Tumble dryer - Mark as empty
+    trigger:
+      platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: LAUNDRY_MARK_TUMBLE_DRYER_EMPTY
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.laundry_tumble_dryer_full
+
+  - alias: Laundry - Washing machine - Send reminder
+    trigger:
+      platform: time_pattern
+      minutes: "/20"
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: person.stefan
+          state: home
+        - condition: state
+          entity_id: input_boolean.laundry_washing_machine_full
+          state: "on"
+        - condition: state
+          entity_id: binary_sensor.washing_machine
+          state: "off"
+    action:
+      - service: script.notify_tv_lametric
+        data:
+          message: "Empty the washing machine."
+          icon: 16587
+      - service: notify.mobile_app_exphone
+        data:
+          message: "Empty the washing machine."
+          title: "Laundry"
+          data:
+            actions:
+              - action: "LAUNDRY_MARK_WASHING_MACHINE_EMPTY"
+                title: "Mark as empty"
+              - action: "LAUNDRY_IGNORE"
+                title: "Ignore"
+
+  - alias: Laundry - Tumble dryer - Send reminder
+    trigger:
+      platform: time_pattern
+      minutes: "/20"
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: person.stefan
+          state: home
+        - condition: state
+          entity_id: input_boolean.laundry_tumble_dryer_full
+          state: "on"
+        - condition: state
+          entity_id: binary_sensor.tumble_dryer
+          state: "off"
+    action:
+      - service: script.notify_tv_lametric
+        data:
+          message: "Empty the tumble dryer."
+          icon: 24504
+      - service: notify.mobile_app_exphone
+        data:
+          message: "Empty the tumble dryer."
+          title: "Laundry"
+          data:
+            actions:
+              - action: "LAUNDRY_MARK_TUMBLE_DRYER_EMPTY"
+                title: "Mark as empty"
+              - action: "LAUNDRY_IGNORE"
+                title: "Ignore"
+
+  - alias: Laundry - Washing machine - Notify finished
+    trigger:
+      platform: state
+      entity_id: binary_sensor.washing_machine
+      to: "off"
+    action:
+      - service: script.notify_tv_lametric
+        data:
+          message: "Washing machine is finished."
+          icon: 16587
+      - service: notify.mobile_app_exphone
+        data:
+          message: "Washing machine is finished."
+          title: "Laundry"
+          data:
+            actions:
+              - action: "LAUNDRY_MARK_WASHING_MACHINE_EMPTY"
+                title: "Mark as empty"
+              - action: "LAUNDRY_IGNORE"
+                title: "Ignore"
+
+  - alias: Laundry - Tumble dryer - Notify finished
+    trigger:
+      platform: state
+      entity_id: binary_sensor.tumble_dryer
+      to: "off"
+    action:
+      - service: script.notify_tv_lametric
+        data:
+          message: "Tumble dryer is finished."
+          icon: 24504
+      - service: notify.mobile_app_exphone
+        data:
+          message: "Tumble dryer is finished."
+          title: "Laundry"
+          data:
+            actions:
+              - action: "LAUNDRY_MARK_TUMBLE_DRYER_EMPTY"
+                title: "Mark as empty"
+              - action: "LAUNDRY_IGNORE"
+                title: "Ignore"
+

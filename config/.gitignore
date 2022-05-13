@@ -3,6 +3,7 @@
 
 # ...except for yaml files and an example of secrets.yml
 !*.yaml
+!packages/
 !secrets.yaml.dist
 
 # Ignore the real secrets.yaml of course.
