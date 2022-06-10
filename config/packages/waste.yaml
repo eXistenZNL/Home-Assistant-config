@@ -1,0 +1,158 @@
+################################################
+## Packages / Waste
+################################################
+
+homeassistant:
+  customize:
+    sensor.afvalwijzer_today_formatted:
+      friendly_name: Today
+    sensor.afvalwijzer_tomorrow_formatted:
+      friendly_name: Tomorrow
+    sensor.afvalwijzer_day_after_tomorrow_formatted:
+      friendly_name: In two days
+    sensor.afvalwijzer_first_next_item:
+      friendly_name: Next pickup item
+    sensor.afvalwijzer_first_next_in_days:
+      friendly_name: Next pickup in days
+    input_boolean.waste_reminder:
+      icon: mdi:reminder
+
+    sensor.afvalwijzer_gft:
+      friendly_name: GFT
+      entity_picture: /local/afvalwijzer/gft1.png
+    sensor.afvalwijzer_papier:
+      friendly_name: Papier
+      entity_picture: /local/afvalwijzer/papier1.png
+    sensor.afvalwijzer_pmd:
+      friendly_name: PMD
+      entity_picture: /local/afvalwijzer/pmd1.png
+    sensor.afvalwijzer_restafval:
+      friendly_name: Restafval
+      entity_picture: /local/afvalwijzer/rest1.png
+
+################################################
+## Inputs
+################################################
+
+input_boolean:
+  waste_moved:
+    name: Waste has been moved
+    initial: 'off'
+    icon: mdi:delete-empty
+  waste_reminder:
+    name: Waste reminder enabled
+    initial: 'on'
+
+################################################
+## Sensors
+################################################
+
+sensor:
+  - platform: afvalwijzer
+    postal_code: !secret afvalwijzer_zipcode
+    street_number: !secret afvalwijzer_housenumber
+
+  - platform: template
+    sensors:
+      afvalwijzer_next_item_formatted:
+        value_template: >-
+          {% if is_state('sensor.afvalwijzer_first_next_item', 'gft') %}GFT
+          {% elif is_state('sensor.afvalwijzer_first_next_item', 'papier') %}Papier
+          {% elif is_state('sensor.afvalwijzer_first_next_item', 'pmd') %}PMD
+          {% elif is_state('sensor.afvalwijzer_first_next_item', 'restafval') %}Restafval
+          {% else %}-
+          {% endif %}
+        friendly_name: 'Next pickup item'
+
+      afvalwijzer_today_formatted:
+        value_template: >-
+          {% if is_state('sensor.afvalwijzer_today', 'gft') %}GFT
+          {% elif is_state('sensor.afvalwijzer_today', 'papier') %}Papier
+          {% elif is_state('sensor.afvalwijzer_today', 'pmd') %}PMD
+          {% elif is_state('sensor.afvalwijzer_today', 'restafval') %}Restafval
+          {% else %}-
+          {% endif %}
+        friendly_name: 'Vandaag'
+
+      afvalwijzer_tomorrow_formatted:
+        value_template: >-
+          {% if is_state('sensor.afvalwijzer_tomorrow', 'gft') %}GFT
+          {% elif is_state('sensor.afvalwijzer_tomorrow', 'papier') %}Papier
+          {% elif is_state('sensor.afvalwijzer_tomorrow', 'pmd') %}PMD
+          {% elif is_state('sensor.afvalwijzer_tomorrow', 'restafval') %}Restafval
+          {% else %}-
+          {% endif %}
+        friendly_name: 'Morgen'
+
+      afvalwijzer_day_after_tomorrow_formatted:
+        value_template: >-
+          {% if is_state('sensor.afvalwijzer_day_after_tomorrow', 'gft') %}GFT
+          {% elif is_state('sensor.afvalwijzer_day_after_tomorrow', 'papier') %}Papier
+          {% elif is_state('sensor.afvalwijzer_day_after_tomorrow', 'pmd') %}PMD
+          {% elif is_state('sensor.afvalwijzer_day_after_tomorrow', 'restafval') %}Restafval
+          {% else %}-
+          {% endif %}
+        friendly_name: 'Overmorgen'
+
+################################################
+## Automations
+################################################
+
+automation:
+  - alias: Waste - Reset status
+    trigger:
+      platform: state
+      entity_id: input_boolean.waste_moved
+      to: "on"
+      for:
+        hours: 8
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.waste_moved
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.waste_reminder
+
+  - alias: Waste - Mark as done
+    trigger:
+      platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: MARK_WASTE_MOVED
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.waste_moved
+
+  - alias: Waste - Send notification
+    trigger:
+      platform: time_pattern
+      minutes: "0"
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.waste_moved
+          state: "off"
+        - condition: state
+          entity_id: input_boolean.waste_reminder
+          state: "on"
+        - condition: and
+          conditions:
+            - condition: time
+              after: "19:55:00"
+            - condition: template
+              value_template: "{{ states('sensor.afvalwijzer_tomorrow_formatted') != '-' }}"
+    action:
+      - service: script.notify_tv_lametric
+        data:
+          message: "Take out the trash ({{ states.sensor.afvalwijzer_tomorrow_formatted.state }})."
+          icon: 18576
+      - service: notify.mobile_app_exphone
+        data:
+          message: "Take out the trash ({{ states.sensor.afvalwijzer_tomorrow_formatted.state }})."
+          data:
+            actions:
+              - action: "MARK_WASTE_MOVED"
+                title: "Mark as done"
+              - action: "WASTE_SKIP"
+                title: "Skip"
+
