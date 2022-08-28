@@ -1,6 +1,6 @@
 # Home Assistant config
 
-[![License](https://img.shields.io/github/license/existenznl/home-assistant-config.svg?style=flat-square)](https://github.com/eXistenZNL/Home-Assistant-Config/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/existenznl/home-assistant-config.svg?style=flat-square)](https://github.com/eXistenZNL/Home-Assistant-Config/blob/master/LICENSE) [![Sponsors](https://img.shields.io/github/sponsors/eXistenZNL?color=hotpink&style=flat-square)](https://github.com/sponsors/eXistenZNL)
 
 ## About
 
@@ -30,7 +30,7 @@ works really well on my mobile phone, which is the main way I interact with Home
 ## Connected devices
 
 Currently my Home Assistant setup is managing the following devices:
- 
+
 | Qty | Type               | Make & Model                                                                                                                                                                            | Integration                                                                                                           |
 |-----|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | 2   | AC unit            | [Daikin Perfera FTXM-R](https://www.daikin.eu/en_us/products/ftxm-r.html)                                                                                                               | [Daikin Residential Controller](https://github.com/rospogrigio/daikin_residential/)                                   |
