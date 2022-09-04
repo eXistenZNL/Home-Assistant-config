@@ -45,11 +45,6 @@ frontend:
 notify:
   - name: lametric
     platform: lametric
-  - name: slack
-    platform: slack
-    api_key: !secret slack_api_key
-    username: "Home Assistant"
-    default_channel: '#homeassistant'
 
 input_boolean:
   awning_wet:
@@ -66,10 +61,6 @@ input_boolean:
 lametric:
   client_id: !secret lametric_client_id
   client_secret: !secret lametric_client_secret
-
-home_connect:
-  client_id: !secret home_connect_client_id
-  client_secret: !secret home_connect_client_secret
 
 alarm_control_panel:
   name: Alarm
