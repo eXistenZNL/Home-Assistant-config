@@ -5,11 +5,11 @@
 input_boolean:
   laundry_washing_machine_full:
     name: Washing machine is full
-    initial: 'off'
+    initial: "off"
     icon: mdi:washing-machine-alert
   laundry_tumble_dryer_full:
     name: Tumble dryer is full
-    initial: 'off'
+    initial: "off"
     icon: mdi:tumble-dryer-alert
 
 ################################################
@@ -79,7 +79,7 @@ automation:
       conditions:
         - condition: state
           entity_id: person.stefan
-          state: home
+          state: "home"
         - condition: state
           entity_id: input_boolean.laundry_washing_machine_full
           state: "on"
@@ -106,13 +106,13 @@ automation:
   - alias: Laundry - Tumble dryer - Send reminder
     trigger:
       platform: time_pattern
-      minutes: "/20"
+      hours: "/2"
     condition:
       condition: and
       conditions:
         - condition: state
           entity_id: person.stefan
-          state: home
+          state: "home"
         - condition: state
           entity_id: input_boolean.laundry_tumble_dryer_full
           state: "on"
