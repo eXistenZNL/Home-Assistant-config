@@ -1,0 +1,214 @@
+################################################
+## Inputs
+################################################
+
+input_boolean:
+  thermostat_at_home_indicator:
+    name: At home indicator
+    initial: 'off'
+    icon: mdi:home
+
+input_number:
+  thermostat_home_value:
+    name: Desired thermostat value when home
+    min: 18
+    max: 23
+    initial: 20
+    icon: mdi:home-thermometer
+
+################################################
+## Scripts
+################################################
+
+script:
+  thermostat_set_temperature_override:
+    alias: Thermostat - Set temperature override
+    icon: mdi:home-thermometer
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: otgw/set/cv/command
+          payload: TT={{ temperature }}
+      - service: notify.slack
+        data:
+          title: Thermostat
+          message: Set thermostat to {{ temperature }} °C.
+    mode: single
+
+  thermostat_disable_temperature_override:
+    alias: Thermostat - Disable temperature override
+    icon: mdi:home-thermometer-outline
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: otgw/set/cv/command
+          payload: TT=0
+      - service: notify.slack
+        data:
+          title: Thermostat
+          message: Disabled temperature override
+    mode: single
+
+################################################
+## Automations
+################################################
+
+automation:
+  - alias: Thermostat - Turn down
+    trigger:
+      - platform: state
+        entity_id: person.stefan
+        from: "home"
+      - platform: state
+        entity_id: group.first_floor_door_sensors
+        to: "on"
+        for:
+          minutes: 1
+      - platform: state
+        entity_id: group.all_window_sensors
+        to: "on"
+    action:
+      - service: script.thermostat_set_temperature_override
+        data:
+          temperature: 14
+    mode: single
+
+  - alias: Thermostat - Turn up
+    trigger:
+      - platform: state
+        entity_id: person.stefan
+        to: "home"
+      - platform: state
+        entity_id: group.all_door_window_sensors
+        to: "off"
+    condition:
+      - condition: state
+        entity_id: person.stefan
+        state: "home"
+      - condition: state
+        entity_id: group.all_door_window_sensors
+        state: "off"
+    action:
+      - service: script.thermostat_set_temperature_override
+        data:
+          temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+    mode: single
+
+  - alias: Thermostat - Turn up if staying home
+    trigger:
+      - platform: time
+        at: "07:00:00"
+    action:
+      - if:
+          - condition: state
+            state: "on"
+            entity_id: input_boolean.thermostat_at_home_indicator
+        then:
+          - service: script.thermostat_set_temperature_override
+            data:
+              temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.thermostat_at_home_indicator
+
+  - alias: Thermostat - Set morning temperature
+    trigger:
+      - platform: time
+        at: "05:00:00"
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.thermostat_home_value
+        data:
+          value: 19
+    mode: single
+
+  - alias: Thermostat - Set afternoon temperature
+    trigger:
+      - platform: time
+        at: "12:00:00"
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.thermostat_home_value
+        data:
+          value: 20
+      - if:
+          - condition: state
+            entity_id: person.stefan
+            state: home
+        then:
+          - service: script.thermostat_set_temperature_override
+            data:
+              temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+    mode: single
+
+  - alias: Thermostat - Set evening temperature
+    trigger:
+      - platform: time
+        at: "19:00:00"
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.thermostat_home_value
+        data:
+          value: 21
+      - if:
+          - condition: state
+            entity_id: person.stefan
+            state: home
+        then:
+          - service: script.thermostat_set_temperature_override
+            data:
+              temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+    mode: single
+
+  - alias: Thermostat - Low pressure warning
+    trigger:
+      - platform: time_pattern
+        minutes: /15
+    condition:
+      - condition: state
+        entity_id: person.stefan
+        state: "home"
+      - condition: numeric_state
+        entity_id: sensor.otgw_water_pressure_in_ch_circuit
+        below: "1.5"
+    action:
+      - service: script.notify_tv_lametric
+        data:
+          message: >-
+            "Warning: central heating water pressure is {{
+            states('sensor.OTGW_Water_pressure_in_CH_circuit') }} bar!"
+    mode: single
+
+  - alias: Thermostat - Mark at home tomorrow
+    trigger:
+      platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: THERMOSTAT_MARK_AT_HOME_TOMORROW
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.thermostat_at_home_indicator
+
+  - alias: Thermostat - Send notification
+    trigger:
+      - platform: time
+        at: "19:00:00"
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+    action:
+      - service: notify.mobile_app_exphone
+        data:
+          message: "Are you at home tomorrow?"
+          data:
+            actions:
+              - action: "THERMOSTAT_MARK_AT_HOME_TOMORROW"
+                title: "Yes"
+              - action: "THERMOSTAT_SKIP"
+                title: "No"
