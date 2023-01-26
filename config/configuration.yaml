@@ -2,6 +2,7 @@ homeassistant:
   name: eXhome
   latitude: !secret homeassistant_latitude
   longitude: !secret homeassistant_longitude
+  country: NL
   elevation: 0
   unit_system: metric
   time_zone: Europe/Amsterdam
@@ -13,7 +14,7 @@ homeassistant:
 default_config:
 
 # Load the stored scenes
-#scene: !include scenes.yaml
+scene: !include scenes.yaml
 
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 http:
@@ -23,13 +24,6 @@ http:
 
 # Discover some devices automatically
 discovery:
-
-# Sensors
-sensor:
-  - platform: afvalwijzer
-    provider: mijnafvalwijzer
-    postal_code: !secret afvalwijzer_zipcode
-    street_number: !secret afvalwijzer_housenumber
 
 logger:
   default: warning
@@ -56,11 +50,6 @@ input_boolean:
   disable_automatic_ac:
     name: Disable automatic AC
     icon: mdi:snowflake-off
-
-
-lametric:
-  client_id: !secret lametric_client_id
-  client_secret: !secret lametric_client_secret
 
 alarm_control_panel:
   name: Alarm
