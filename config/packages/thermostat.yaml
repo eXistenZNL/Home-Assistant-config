@@ -5,16 +5,29 @@
 input_boolean:
   thermostat_at_home_indicator:
     name: At home indicator
-    initial: 'off'
     icon: mdi:home
 
 input_number:
-  thermostat_home_value:
-    name: Desired thermostat value when home
+  thermostat_home_setpoint:
+    name: Home thermostat setpoint
     min: 18
     max: 23
-    initial: 20
     icon: mdi:home-thermometer
+    unit_of_measurement: °C
+
+  thermostat_away_setpoint:
+    name: Away thermostat setpoint
+    min: 14
+    max: 20
+    icon: mdi:home-thermometer-outline
+    unit_of_measurement: °C
+
+  thermostat_airing_setpoint:
+    name: Airing thermostat setpoint
+    min: 14
+    max: 19
+    icon: mdi:snowflake-thermometer
+    unit_of_measurement: °C
 
 ################################################
 ## Scripts
@@ -54,11 +67,19 @@ script:
 ################################################
 
 automation:
-  - alias: Thermostat - Turn down
+  - alias: Thermostat - Turn down when away
     trigger:
       - platform: state
         entity_id: person.stefan
         from: "home"
+    action:
+      - service: script.thermostat_set_temperature_override
+        data:
+          temperature: "{{ states('input_number.thermostat_away_setpoint') | int }}"
+    mode: single
+
+  - alias: Thermostat - Turn down when airing the house
+    trigger:
       - platform: state
         entity_id: group.first_floor_door_sensors
         to: "on"
@@ -70,7 +91,7 @@ automation:
     action:
       - service: script.thermostat_set_temperature_override
         data:
-          temperature: 14
+          temperature: "{{ states('input_number.thermostat_airing_setpoint') | int }}"
     mode: single
 
   - alias: Thermostat - Turn up
@@ -91,7 +112,7 @@ automation:
     action:
       - service: script.thermostat_set_temperature_override
         data:
-          temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+          temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
     mode: single
 
   - alias: Thermostat - Turn up if staying home
@@ -106,7 +127,7 @@ automation:
         then:
           - service: script.thermostat_set_temperature_override
             data:
-              temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+              temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
       - service: input_boolean.turn_off
         entity_id: input_boolean.thermostat_at_home_indicator
 
@@ -117,7 +138,7 @@ automation:
     action:
       - service: input_number.set_value
         target:
-          entity_id: input_number.thermostat_home_value
+          entity_id: input_number.thermostat_home_setpoint
         data:
           value: 19
     mode: single
@@ -129,7 +150,7 @@ automation:
     action:
       - service: input_number.set_value
         target:
-          entity_id: input_number.thermostat_home_value
+          entity_id: input_number.thermostat_home_setpoint
         data:
           value: 20
       - if:
@@ -139,7 +160,7 @@ automation:
         then:
           - service: script.thermostat_set_temperature_override
             data:
-              temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+              temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
     mode: single
 
   - alias: Thermostat - Set evening temperature
@@ -149,7 +170,7 @@ automation:
     action:
       - service: input_number.set_value
         target:
-          entity_id: input_number.thermostat_home_value
+          entity_id: input_number.thermostat_home_setpoint
         data:
           value: 21
       - if:
@@ -159,7 +180,7 @@ automation:
         then:
           - service: script.thermostat_set_temperature_override
             data:
-              temperature: "{{ states('input_number.thermostat_home_value') | int }}"
+              temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
     mode: single
 
   - alias: Thermostat - Low pressure warning
