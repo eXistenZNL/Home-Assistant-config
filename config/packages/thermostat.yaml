@@ -45,7 +45,7 @@ script:
       - service: notify.slack
         data:
           title: Thermostat
-          message: Set thermostat to {{ temperature }} °C.
+          message: Setting thermostat to {{ temperature }} °C, {{ reason }}.
     mode: single
 
   thermostat_disable_temperature_override:
@@ -62,85 +62,96 @@ script:
           message: Disabled temperature override
     mode: single
 
+  thermostat_update_setpoint:
+    alias: Thermostat - Update setpoint
+    sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: group.all_door_window_sensors
+            state: "on"
+          sequence:
+            - service: script.thermostat_set_temperature_override
+              data:
+                reason: "airing the house"
+                temperature: "{{ states('input_number.thermostat_airing_setpoint') | int }}"
+        - conditions:
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: person.stefan
+                state: home
+          sequence:
+            - service: script.thermostat_set_temperature_override
+              data:
+                reason: "you're not at home"
+                temperature: "{{ states('input_number.thermostat_away_setpoint') | int }}"
+        - conditions:
+            - condition: and
+              conditions:
+                - condition: time
+                  before: "10:00:00"
+                - condition: state
+                  entity_id: input_boolean.thermostat_at_home_indicator
+                  state: "off"
+          sequence:
+            - service: script.thermostat_set_temperature_override
+              data:
+                reason: "you're not at home today"
+                temperature: "{{ states('input_number.thermostat_away_setpoint') | int }}"
+        - conditions:
+          - condition: time
+            after: "22:59:59"
+          sequence:
+            - service: script.thermostat_set_temperature_override
+              data:
+                reason: "time to sleep"
+                temperature: "17"
+        default:
+          - service: script.thermostat_set_temperature_override
+            data:
+              reason: "yo"
+              temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
+    mode: single
+
 ################################################
 ## Automations
 ################################################
 
 automation:
-  - alias: Thermostat - Turn down when away
+  - alias: Thermostat - Update setpoint
     trigger:
       - platform: state
         entity_id: person.stefan
         from: "home"
-    action:
-      - service: script.thermostat_set_temperature_override
-        data:
-          temperature: "{{ states('input_number.thermostat_away_setpoint') | int }}"
-    mode: single
-
-  - alias: Thermostat - Turn down when airing the house
-    trigger:
-      - platform: state
-        entity_id: group.first_floor_door_sensors
-        to: "on"
-        for:
-          minutes: 1
-      - platform: state
-        entity_id: group.all_window_sensors
-        to: "on"
-    action:
-      - service: script.thermostat_set_temperature_override
-        data:
-          temperature: "{{ states('input_number.thermostat_airing_setpoint') | int }}"
-    mode: single
-
-  - alias: Thermostat - Turn up
-    trigger:
       - platform: state
         entity_id: person.stefan
         to: "home"
       - platform: state
-        entity_id: group.all_door_window_sensors
-        to: "off"
-    condition:
-      - condition: state
-        entity_id: person.stefan
-        state: "home"
-      - condition: state
-        entity_id: group.all_door_window_sensors
-        state: "off"
-    action:
-      - service: script.thermostat_set_temperature_override
-        data:
-          temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
-    mode: single
-
-  - alias: Thermostat - Turn up if staying home
-    trigger:
+        entity_id: group.first_floor_door_sensors
+        for:
+          minutes: 1
+      - platform: state
+        entity_id: group.all_window_sensors
       - platform: time
-        at: "07:00:00"
+        at: "23:00:00"
     action:
-      - if:
-          - condition: state
-            state: "on"
-            entity_id: input_boolean.thermostat_at_home_indicator
-        then:
-          - service: script.thermostat_set_temperature_override
-            data:
-              temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
-      - service: input_boolean.turn_off
-        entity_id: input_boolean.thermostat_at_home_indicator
+      - service: script.thermostat_update_setpoint
+    mode: single
 
   - alias: Thermostat - Set morning temperature
     trigger:
       - platform: time
-        at: "05:00:00"
+        at: "07:00:00"
     action:
       - service: input_number.set_value
         target:
           entity_id: input_number.thermostat_home_setpoint
         data:
           value: 19
+      - service: script.thermostat_update_setpoint
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.thermostat_at_home_indicator
     mode: single
 
   - alias: Thermostat - Set afternoon temperature
@@ -153,14 +164,7 @@ automation:
           entity_id: input_number.thermostat_home_setpoint
         data:
           value: 20
-      - if:
-          - condition: state
-            entity_id: person.stefan
-            state: home
-        then:
-          - service: script.thermostat_set_temperature_override
-            data:
-              temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
+      - service: script.thermostat_update_setpoint
     mode: single
 
   - alias: Thermostat - Set evening temperature
@@ -173,14 +177,7 @@ automation:
           entity_id: input_number.thermostat_home_setpoint
         data:
           value: 21
-      - if:
-          - condition: state
-            entity_id: person.stefan
-            state: home
-        then:
-          - service: script.thermostat_set_temperature_override
-            data:
-              temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
+      - service: script.thermostat_update_setpoint
     mode: single
 
   - alias: Thermostat - Low pressure warning
@@ -202,7 +199,7 @@ automation:
             states('sensor.OTGW_Water_pressure_in_CH_circuit') }} bar!"
     mode: single
 
-  - alias: Thermostat - Mark at home tomorrow
+  - alias: Thermostat - Mark at home - Event
     trigger:
       platform: event
       event_type: mobile_app_notification_action
@@ -212,7 +209,21 @@ automation:
       - service: input_boolean.turn_on
         entity_id: input_boolean.thermostat_at_home_indicator
 
-  - alias: Thermostat - Send notification
+  - alias: Thermostat - Mark at home - Automatic
+    trigger:
+      - platform: time
+        at: "19:00:00"
+    condition:
+      - condition: time
+        weekday:
+          - fri
+          - sat
+          - sun
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.thermostat_at_home_indicator
+
+  - alias: Thermostat - Mark at home - Send notification
     trigger:
       - platform: time
         at: "19:00:00"
