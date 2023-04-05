@@ -62,8 +62,8 @@ script:
           message: Disabled temperature override
     mode: single
 
-  thermostat_update_setpoint:
-    alias: Thermostat - Update setpoint
+  thermostat_do_tick:
+    alias: Thermostat - Do tick
     sequence:
       - choose:
         - conditions:
@@ -136,7 +136,7 @@ automation:
       - platform: time
         at: "23:00:00"
     action:
-      - service: script.thermostat_update_setpoint
+      - service: script.thermostat_do_tick
     mode: single
 
   - alias: Thermostat - Set morning temperature
@@ -149,7 +149,7 @@ automation:
           entity_id: input_number.thermostat_home_setpoint
         data:
           value: 19
-      - service: script.thermostat_update_setpoint
+      - service: script.thermostat_do_tick
       - service: input_boolean.turn_on
         entity_id: input_boolean.thermostat_at_home_indicator
     mode: single
@@ -164,7 +164,7 @@ automation:
           entity_id: input_number.thermostat_home_setpoint
         data:
           value: 20
-      - service: script.thermostat_update_setpoint
+      - service: script.thermostat_do_tick
     mode: single
 
   - alias: Thermostat - Set evening temperature
@@ -177,7 +177,7 @@ automation:
           entity_id: input_number.thermostat_home_setpoint
         data:
           value: 21
-      - service: script.thermostat_update_setpoint
+      - service: script.thermostat_do_tick
     mode: single
 
   - alias: Thermostat - Low pressure warning
@@ -216,6 +216,7 @@ automation:
     condition:
       - condition: time
         weekday:
+          - tue
           - fri
           - sat
           - sun
@@ -231,7 +232,6 @@ automation:
       - condition: time
         weekday:
           - mon
-          - tue
           - wed
           - thu
     action:

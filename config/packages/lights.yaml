@@ -17,11 +17,81 @@ input_boolean:
     initial: "off"
 
 ################################################
+## Scripts
+################################################
+
+script:
+  lights_do_tick:
+    alias: Lights - Do tick
+    sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_boolean.sleep_mode
+            state: 'on'
+          sequence:
+            - scene: scene.living_room_lights_off
+            - scene: scene.exterior_lights_off
+        - conditions:
+          - condition: state
+            entity_id: input_number.light_level
+            state: '4.0'
+          sequence:
+            - scene: scene.living_room_lights_off
+            - scene: scene.exterior_lights_off
+        - conditions:
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: person.stefan
+                state: home
+          sequence:
+            - scene: scene.living_room_lights_away
+            - scene: scene.exterior_lights_away
+        - conditions:
+          - condition: state
+            entity_id: input_number.light_level
+            state: '3.0'
+          sequence:
+            - scene: scene.living_room_lights_on_1_3
+            - scene: scene.exterior_lights_off
+        - conditions:
+          - condition: state
+            entity_id: input_number.light_level
+            state: '2.0'
+          sequence:
+            - scene: scene.living_room_lights_on_2_3
+            - scene: scene.exterior_lights_off
+        - conditions:
+          - condition: state
+            entity_id: input_number.light_level
+            state: '1.0'
+          sequence:
+            - scene: scene.living_room_lights_on_3_3
+            - scene: scene.exterior_lights_on_1_2
+        - conditions:
+          - condition: state
+            entity_id: input_number.light_level
+            state: '0.0'
+          sequence:
+            - scene: scene.living_room_lights_on_3_3
+            - scene: scene.exterior_lights_on_2_2
+
+################################################
 ## Automations
 ################################################
 
 automation:
-  - alias: Variable - Light level to 0
+  - alias: Lights - Do tick
+    trigger:
+      - platform: state
+        entity_id: person.stefan
+      - platform: state
+        entity_id: input_number.light_level
+    action:
+      - service: script.lights_do_tick
+
+  - alias: Lights - Level 0
     trigger:
       - platform: sun
         event: sunset
@@ -32,7 +102,7 @@ automation:
         data:
           value: 0
 
-  - alias: Variable - Light level to 1
+  - alias: Lights - Level 1
     trigger:
       - platform: sun
         event: sunrise
@@ -45,7 +115,7 @@ automation:
         data:
           value: 1
 
-  - alias: Variable - Light level to 2
+  - alias: Lights - Level 2
     trigger:
       - platform: sun
         event: sunrise
@@ -59,7 +129,7 @@ automation:
         data:
           value: 2
 
-  - alias: Variable - Light level to 3
+  - alias: Lights - Level 3
     trigger:
       - platform: sun
         event: sunrise
@@ -72,7 +142,7 @@ automation:
         data:
           value: 3
 
-  - alias: Variable - Light level to 4
+  - alias: Lights - Level 4
     trigger:
       - platform: sun
         event: sunrise
@@ -82,69 +152,6 @@ automation:
         entity_id: input_number.light_level
         data:
           value: 4
-
-  - alias: Lights - Turn on 1/4
-    trigger:
-      - platform: state
-        entity_id: input_number.light_level
-        to: '3.0'
-    condition:
-      - condition: state
-        entity_id: input_boolean.sleep_mode
-        state: "off"
-    action:
-      - scene: scene.living_room_lights_on_1_3
-    mode: single
-
-  - alias: Lights - Turn on 2/4
-    trigger:
-      - platform: state
-        entity_id: input_number.light_level
-        to: '2.0'
-    condition:
-      - condition: state
-        entity_id: input_boolean.sleep_mode
-        state: "off"
-    action:
-      - scene: scene.living_room_lights_on_2_3
-    mode: single
-
-  - alias: Lights - Turn on 3/4
-    trigger:
-      - platform: state
-        entity_id: input_number.light_level
-        to: '1.0'
-    condition:
-      - condition: state
-        entity_id: input_boolean.sleep_mode
-        state: "off"
-    action:
-      - scene: scene.living_room_lights_on_3_3
-      - scene: scene.exterior_lights_on_1_2
-    mode: single
-
-  - alias: Lights - Turn on 4/4
-    trigger:
-      - platform: state
-        entity_id: input_number.light_level
-        to: '0.0'
-    condition:
-      - condition: state
-        entity_id: input_boolean.sleep_mode
-        state: "off"
-    action:
-      - scene: scene.exterior_lights_on_2_2
-    mode: single
-
-  - alias: Lights - Turn off
-    trigger:
-      - platform: state
-        entity_id: input_number.light_level
-        to: '4.0'
-    action:
-      - scene: scene.living_room_lights_off
-      - scene: scene.exterior_lights_off
-    mode: single
 
   - alias: Lights - Hallway lamp - Turn off when opening front door
     description: To prevent critters from flying to the light
@@ -214,6 +221,19 @@ scene:
         state: on
     icon: hass:coach-light
 
+  - name: Exterior lights away
+    entities:
+      switch.hallway_lights_switch_2:
+        friendly_name: Porch light
+        state: on
+      switch.back_garden_awning_lights_switch_1:
+        friendly_name: Rear lights
+        state: off
+      switch.shed_light_switch:
+        friendly_name: Shed light
+        state: on
+    icon: hass:coach-light
+
   - name: Exterior lights off
     entities:
       switch.hallway_lights_switch_2:
@@ -261,7 +281,7 @@ scene:
         brightness_pct: 10
       light.kitchen_lights_dimmer:
         state: on
-        brightness_pct: 1
+        brightness_pct: 5
     icon: hass:light
 
   - name: Living room lights on 3/3
@@ -280,7 +300,25 @@ scene:
         brightness_pct: 40
       light.kitchen_lights_dimmer:
         state: on
-        brightness_pct: 8
+        brightness_pct: 10
+    icon: hass:light
+
+  - name: Living room lights away
+    entities:
+      switch.living_room_tv_light_switch:
+        friendly_name: Living room-TV light_switch
+        state: off
+      switch.living_room_couch_light_switch:
+        friendly_name: Living room-Couch light_switch
+        state: off
+      switch.living_room_front_light_switch:
+        friendly_name: Living room-Front light_switch
+        state: off
+      light.living_room_dinner_table_dimmer:
+        state: on
+        brightness_pct: 1
+      light.kitchen_lights_dimmer:
+        state: off
     icon: hass:light
 
   - name: Living room lights off
