@@ -86,6 +86,10 @@ automation:
     trigger:
       - platform: state
         entity_id: person.stefan
+        from: "home"
+      - platform: state
+        entity_id: person.stefan
+        to: "home"
       - platform: state
         entity_id: input_number.light_level
     action:
@@ -198,65 +202,50 @@ scene:
   - name: Exterior lights on 1/2
     entities:
       switch.hallway_lights_switch_2:
-        friendly_name: Porch light
         state: off
       switch.back_garden_awning_lights_switch_1:
-        friendly_name: Rear lights
         state: off
       switch.shed_light_switch:
-        friendly_name: Shed light
         state: on
     icon: hass:coach-light
 
   - name: Exterior lights on 2/2
     entities:
       switch.hallway_lights_switch_2:
-        friendly_name: Porch light
         state: on
       switch.back_garden_awning_lights_switch_1:
-        friendly_name: Rear lights
         state: on
       switch.shed_light_switch:
-        friendly_name: Shed light
         state: on
     icon: hass:coach-light
 
   - name: Exterior lights away
     entities:
       switch.hallway_lights_switch_2:
-        friendly_name: Porch light
         state: on
       switch.back_garden_awning_lights_switch_1:
-        friendly_name: Rear lights
         state: off
       switch.shed_light_switch:
-        friendly_name: Shed light
         state: on
     icon: hass:coach-light
 
   - name: Exterior lights off
     entities:
       switch.hallway_lights_switch_2:
-        friendly_name: Porch light
         state: off
       switch.back_garden_awning_lights_switch_1:
-        friendly_name: Rear lights
         state: off
       switch.shed_light_switch:
-        friendly_name: Shed light
         state: off
     icon: hass:coach-light
 
   - name: Living room lights on 1/3
     entities:
       switch.living_room_tv_light_switch:
-        friendly_name: Living room-TV light_switch
         state: on
       switch.living_room_couch_light_switch:
-        friendly_name: Living room-Couch light_switch
         state: off
       switch.living_room_front_light_switch:
-        friendly_name: Living room-Front light_switch
         state: off
       light.living_room_dinner_table_dimmer:
         state: off
@@ -268,13 +257,10 @@ scene:
   - name: Living room lights on 2/3
     entities:
       switch.living_room_tv_light_switch:
-        friendly_name: Living room-TV light_switch
         state: on
       switch.living_room_couch_light_switch:
-        friendly_name: Living room-Couch light_switch
         state: on
       switch.living_room_front_light_switch:
-        friendly_name: Living room-Front light_switch
         state: off
       light.living_room_dinner_table_dimmer:
         state: on
@@ -287,13 +273,10 @@ scene:
   - name: Living room lights on 3/3
     entities:
       switch.living_room_tv_light_switch:
-        friendly_name: Living room-TV light_switch
         state: on
       switch.living_room_couch_light_switch:
-        friendly_name: Living room-Couch light_switch
         state: on
       switch.living_room_front_light_switch:
-        friendly_name: Living room-Front light_switch
         state: on
       light.living_room_dinner_table_dimmer:
         state: on
@@ -306,13 +289,10 @@ scene:
   - name: Living room lights away
     entities:
       switch.living_room_tv_light_switch:
-        friendly_name: Living room-TV light_switch
         state: off
       switch.living_room_couch_light_switch:
-        friendly_name: Living room-Couch light_switch
         state: off
       switch.living_room_front_light_switch:
-        friendly_name: Living room-Front light_switch
         state: off
       light.living_room_dinner_table_dimmer:
         state: on
@@ -324,13 +304,10 @@ scene:
   - name: Living room lights off
     entities:
       switch.living_room_tv_light_switch:
-        friendly_name: Living room-TV light_switch
         state: off
       switch.living_room_couch_light_switch:
-        friendly_name: Living room-Couch light_switch
         state: off
       switch.living_room_front_light_switch:
-        friendly_name: Living room-Front light_switch
         state: off
       light.living_room_dinner_table_dimmer:
         state: off
@@ -341,19 +318,15 @@ scene:
   - name: Night lights on
     entities:
       switch.bedroom_left_night_light_switch:
-        friendly_name: Bedroom-Night light right_switch
         state: on
       switch.bedroom_right_night_light_switch:
-        friendly_name: Bedroom-Night light left_switch
         state: on
     icon: hass:lights
 
   - name: Night lights off
     entities:
       switch.bedroom_left_night_light_switch:
-        friendly_name: Bedroom-Night light left_switch
         state: off
       switch.bedroom_right_night_light_switch:
-        friendly_name: Bedroom-Night light right_switch
         state: off
     icon: mdi:lights-outline
