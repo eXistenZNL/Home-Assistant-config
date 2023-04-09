@@ -42,10 +42,6 @@ script:
         data:
           topic: otgw/set/cv/command
           payload: TT={{ temperature }}
-      - service: notify.slack
-        data:
-          title: Thermostat
-          message: Setting thermostat to {{ temperature }} °C, {{ reason }}.
     mode: single
 
   thermostat_disable_temperature_override:
@@ -56,10 +52,6 @@ script:
         data:
           topic: otgw/set/cv/command
           payload: TT=0
-      - service: notify.slack
-        data:
-          title: Thermostat
-          message: Disabled temperature override
     mode: single
 
   thermostat_do_tick:
@@ -73,7 +65,6 @@ script:
           sequence:
             - service: script.thermostat_set_temperature_override
               data:
-                reason: "airing the house"
                 temperature: "{{ states('input_number.thermostat_airing_setpoint') | int }}"
         - conditions:
           - condition: not
@@ -84,7 +75,6 @@ script:
           sequence:
             - service: script.thermostat_set_temperature_override
               data:
-                reason: "you're not at home"
                 temperature: "{{ states('input_number.thermostat_away_setpoint') | int }}"
         - conditions:
             - condition: and
@@ -97,7 +87,6 @@ script:
           sequence:
             - service: script.thermostat_set_temperature_override
               data:
-                reason: "you're not at home today"
                 temperature: "{{ states('input_number.thermostat_away_setpoint') | int }}"
         - conditions:
           - condition: time
@@ -105,12 +94,10 @@ script:
           sequence:
             - service: script.thermostat_set_temperature_override
               data:
-                reason: "time to sleep"
                 temperature: "17"
         default:
           - service: script.thermostat_set_temperature_override
             data:
-              reason: "yo"
               temperature: "{{ states('input_number.thermostat_home_setpoint') | int }}"
     mode: single
 
