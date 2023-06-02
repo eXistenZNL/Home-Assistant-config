@@ -89,8 +89,12 @@ script:
               data:
                 temperature: "{{ states('input_number.thermostat_away_setpoint') | int }}"
         - conditions:
-          - condition: time
-            after: "22:59:59"
+          - condition: or
+            conditions:
+              - condition: time
+                before: "6:00:00"
+              - condition: time
+                after: "22:59:59"
           sequence:
             - service: script.thermostat_set_temperature_override
               data:
