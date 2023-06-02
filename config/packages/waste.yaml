@@ -150,9 +150,9 @@ automation:
         data:
           message: "Take out the trash ({{ states.sensor.afvalwijzer_tomorrow_formatted.state }})."
           data:
+            tag: "waste-reminder"
             actions:
               - action: "MARK_WASTE_MOVED"
                 title: "Mark as done"
               - action: "WASTE_SKIP"
                 title: "Skip"
-

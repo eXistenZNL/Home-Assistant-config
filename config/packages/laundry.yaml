@@ -151,6 +151,7 @@ automation:
           message: "Washing machine is finished."
           title: "Laundry"
           data:
+            tag: "laundry-washing-machine-full"
             actions:
               - action: "LAUNDRY_MARK_WASHING_MACHINE_EMPTY"
                 title: "Mark as empty"
@@ -172,6 +173,7 @@ automation:
           message: "Tumble dryer is finished."
           title: "Laundry"
           data:
+            tag: "laundry-tumble-dryer-full"
             actions:
               - action: "LAUNDRY_MARK_TUMBLE_DRYER_EMPTY"
                 title: "Mark as empty"
