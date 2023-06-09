@@ -1,0 +1,881 @@
+views:
+  - theme: Backend-selected
+    title: Overview
+    icon: hass:home
+    path: overview
+    badges:
+      - entity: person.stefan
+      - entity: sun.sun
+      - entity: sensor.afvalwijzer_next_type
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: vertical-stack
+            cards:
+              - type: grid
+                cards:
+                  - type: grid
+                    cards:
+                      - show_name: false
+                        show_icon: true
+                        type: button
+                        entity: group.all_door_window_sensors
+                        show_state: true
+                        hold_action:
+                          action: none
+                        icon: mdi:door-closed-lock
+                        tap_action:
+                          action: navigate
+                          navigation_path: security
+                      - show_name: false
+                        show_icon: true
+                        type: button
+                        tap_action:
+                          action: navigate
+                          navigation_path: climate
+                        entity: sensor.otgw_room_temperature
+                        show_state: true
+                      - type: button
+                        tap_action:
+                          action: navigate
+                          navigation_path: lights
+                        entity: group.all_lights
+                        show_name: false
+                        icon: hass:lamp
+                        hold_action:
+                          action: toggle
+                        show_state: true
+                      - type: button
+                        tap_action:
+                          action: navigate
+                          navigation_path: power
+                        entity: sensor.p1_meter_active_power
+                        show_name: false
+                        show_state: true
+                        show_icon: true
+                        icon: hass:flash-outline
+                    columns: 2
+                    square: true
+                  - type: button
+                    tap_action:
+                      action: more-info
+                    entity: alarm_control_panel.alarm
+                    show_name: false
+                    show_state: true
+                    hold_action:
+                      action: navigate
+                      navigation_path: security
+                  - type: grid
+                    cards:
+                      - type: button
+                        tap_action:
+                          action: toggle
+                        entity: script.go_to_bed
+                        show_name: false
+                      - type: button
+                        tap_action:
+                          action: toggle
+                        entity: script.wake_up
+                        show_name: false
+                        show_state: false
+                      - type: button
+                        tap_action:
+                          action: toggle
+                        entity: input_boolean.waste_moved
+                        show_name: false
+                      - type: button
+                        tap_action:
+                          action: toggle
+                        entity: input_boolean.disable_automatic_ac
+                        icon: hass:snowflake-off
+                        show_name: false
+                    columns: 2
+                    square: true
+                columns: 3
+                square: true
+          - type: weather-forecast
+            entity: weather.br_lelystad
+            show_forecast: true
+          - type: grid
+            cards:
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: bedroom
+                entity: group.bedroom_lights
+                icon: hass:bed-king-outline
+                show_icon: true
+                show_name: false
+                hold_action:
+                  action: toggle
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: office
+                entity: group.office_lights
+                show_name: false
+                icon: hass:monitor
+                hold_action:
+                  action: toggle
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: upstairs
+                entity: group.first_floor_lights
+                show_name: false
+                icon: hass:stairs-up
+                hold_action:
+                  action: toggle
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: attic
+                entity: group.attic_lights
+                icon: mdi:home-roof
+                show_name: false
+                hold_action:
+                  action: toggle
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: living-room
+                entity: group.living_room_lights
+                show_state: false
+                show_icon: true
+                show_name: false
+                icon: hass:sofa-outline
+                hold_action:
+                  action: toggle
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: kitchen
+                entity: group.kitchen_lights
+                icon: hass:toaster-oven
+                show_name: false
+                hold_action:
+                  action: toggle
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: downstairs
+                entity: group.hallway_lights
+                show_name: false
+                icon: hass:stairs-down
+                hold_action:
+                  action: toggle
+              - type: button
+                tap_action:
+                  action: navigate
+                  navigation_path: outside
+                entity: group.outside_lights
+                icon: hass:grass
+                show_name: false
+                hold_action:
+                  action: toggle
+            columns: 4
+  - title: Living room
+    path: living-room
+    icon: hass:sofa-outline
+    panel: false
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Lights'
+          - square: true
+            columns: 3
+            type: grid
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.living_room_couch_light_switch
+                icon: ''
+                show_state: false
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.living_room_tv_light_switch
+                icon: ''
+                show_state: false
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.living_room_front_light_switch
+                icon: ''
+                show_state: false
+              - show_name: true
+                show_icon: true
+                type: button
+                entity: light.kitchen_lights_dimmer
+                name: Corner spots
+              - type: button
+                entity: light.living_room_dinner_table_dimmer
+                name: Dinner table
+              - type: button
+                entity: light.kitchen_lights_dimmer
+                name: Front lamp
+                icon: mdi:ceiling-light
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Media'
+          - type: media-control
+            entity: media_player.tv
+            turn_on_action: bla
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Doors & Windows'
+          - type: entities
+            entities:
+              - entity: binary_sensor.living_room_front_window_door_state
+                name: Front window
+              - entity: binary_sensor.living_room_rear_window_door_state
+                name: Rear window
+              - entity: binary_sensor.kitchen_rear_window_door_state
+                name: Kitchen window
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Climate'
+          - type: custom:simple-thermostat
+            entity: climate.otgw_thermostat
+            step_size: 1
+            layout:
+              mode:
+                names: true
+                headings: true
+            header: false
+          - type: custom:simple-thermostat
+            entity: climate.living_room_ac
+            header: false
+            layout:
+              mode:
+                names: true
+                icons: true
+                headings: true
+  - title: Downstairs
+    path: downstairs
+    icon: hass:stairs-down
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Lights'
+          - square: true
+            columns: 2
+            type: grid
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.hallway_lights_switch_1
+                icon: ''
+                show_state: false
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.hallway_lights_switch_1
+                icon: ''
+                show_state: false
+                name: Toilet
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Doors & Windows'
+          - type: entities
+            entities:
+              - entity: binary_sensor.hallway_front_door_door_state
+                name: Front door
+  - icon: hass:toaster-oven
+    title: Kitchen
+    path: kitchen
+    panel: false
+    badges: []
+    cards:
+      - type: grid
+        cards:
+          - type: button
+            tap_action:
+              action: toggle
+            entity: switch.1_steam_oven_power
+            name: Steam oven
+            icon: mdi:toaster-oven
+            show_state: true
+            show_icon: true
+          - type: button
+            tap_action:
+              action: toggle
+            entity: switch.coffee_machine_power
+            icon: mdi:coffee-maker
+            name: Coffee machine
+            show_state: true
+          - type: button
+            tap_action:
+              action: toggle
+            entity: switch.combimagnetron_power
+            name: Combi microwave
+            icon: mdi:toaster-oven
+            show_state: true
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Lights'
+          - type: grid
+            cards:
+              - type: button
+                entity: light.kitchen_lights_dimmer
+                icon: ''
+            columns: 3
+            square: true
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Doors & Windows'
+          - type: entities
+            entities:
+              - entity: binary_sensor.kitchen_rear_door_door_state
+                name: Kitchen door
+              - entity: binary_sensor.kitchen_rear_window_door_state
+                name: Kitchen window
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Dishwasher'
+          - type: entities
+            entities:
+              - entity: binary_sensor.dishwasher_door
+              - entity: sensor.dishwasher_operation_state
+              - entity: sensor.dishwasher_program_progress
+              - entity: sensor.dishwasher_remaining_program_time
+  - title: Bedroom
+    path: bedroom
+    icon: hass:bed-king-outline
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Lights'
+          - type: grid
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.bedroom_left_night_light_switch
+                show_state: false
+                name: Left night light
+                icon: mdi:lamp
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: group.night_lights
+                icon: mdi:lamps
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                show_state: false
+                name: Right night light
+                entity: switch.bedroom_right_night_light_switch
+                icon: mdi:lamp
+            columns: 3
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Media'
+          - type: media-control
+            entity: media_player.kodi
+      - type: custom:simple-thermostat
+        entity: climate.bedroom_ac
+        layout:
+          step: row
+        header: false
+  - title: Upstairs
+    icon: hass:stairs-up
+    path: upstairs
+    badges: []
+    cards: []
+  - title: Office
+    path: office
+    icon: hass:monitor
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Lights'
+          - type: grid
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: light.office_lights_dimmer
+                icon: ''
+                show_state: false
+            columns: 3
+  - title: Attic
+    path: attic
+    icon: hass:home-roof
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Laundry'
+          - type: grid
+            cards:
+              - type: button
+                tap_action:
+                  action: more-info
+                entity: binary_sensor.washing_machine
+                hold_action:
+                  action: none
+                show_state: false
+                show_name: true
+                show_icon: true
+              - type: button
+                tap_action:
+                  action: more-info
+                entity: binary_sensor.tumble_dryer
+                hold_action:
+                  action: none
+            columns: 2
+            square: true
+          - type: entities
+            entities:
+              - entity: sensor.attic_washing_machine_electric_w_value
+                secondary_info: none
+                name: Waching machine power usage
+              - entity: sensor.attic_dryer_electric_w_value
+                name: Tumble dryer power usage
+              - entity: input_boolean.laundry_washing_machine_full
+              - entity: input_boolean.laundry_tumble_dryer_full
+              - entity: switch.attic_dryer_switch
+                name: Tumble dryer power switch
+              - entity: switch.attic_washing_machine_switch
+            state_color: false
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Doors & Windows'
+          - type: entities
+            entities:
+              - entity: binary_sensor.attic_velux_window_door_state
+                name: Velux window
+              - entity: binary_sensor.attic_bedroom_window_door_state
+                name: Bedroom window
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Climate'
+          - type: entity
+            entity: sensor.attic_washing_machine_temperature_air
+            name: Attic temp
+          - type: sensor
+            graph: line
+            entity: sensor.otgw_water_pressure_in_ch_circuit
+            hours_to_show: 168
+            name: CV water pressure
+            icon: mdi:gauge
+  - icon: hass:grass
+    title: Outside
+    path: outside
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: '## Lights'
+          - type: grid
+            cards:
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                entity: switch.hallway_lights_switch_2
+                show_state: false
+                name: Front light
+                icon: hass:coach-lamp
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                show_state: false
+                name: Rear lights
+                entity: switch.back_garden_awning_lights_switch_1
+                icon: hass:coach-lamp
+              - show_name: true
+                show_icon: true
+                type: button
+                tap_action:
+                  action: toggle
+                show_state: false
+                name: Shed light
+                entity: switch.shed_light_switch
+                icon: mdi:coach-lamp
+            columns: 3
+      - type: entity
+        entity: cover.back_garden_awning_position
+        attribute: current_position
+        name: Awning position %
+        icon: mdi:storefront-outline
+      - type: history-graph
+        entities:
+          - entity: sensor.br_irradiance
+          - entity: cover.back_garden_awning_position
+        title: Awning status
+  - icon: hass:thermometer
+    title: Climate
+    path: climate
+    badges: []
+    cards:
+      - type: picture-entity
+        entity: camera.buienradar
+      - type: entities
+        entities:
+          - entity: input_boolean.thermostat_at_home_indicator
+          - entity: input_boolean.sleep_mode
+          - entity: input_number.airco_enable_setpoint
+            secondary_info: last-updated
+          - entity: input_number.airco_disable_setpoint
+            secondary_info: last-changed
+          - entity: input_number.thermostat_home_setpoint
+          - entity: input_number.thermostat_away_setpoint
+          - entity: input_number.thermostat_airing_setpoint
+      - type: weather-forecast
+        entity: weather.br_lelystad
+      - type: custom:apexcharts-card
+        series:
+          - entity: sensor.br_wind_speed
+            yaxis_id: wind
+            color: '#44739e'
+            stroke_width: 2
+          - entity: sensor.br_wind_gust
+            yaxis_id: wind
+            color: '#984ea3'
+            stroke_width: 2
+          - entity: sensor.back_garden_rain_sensor_water_rain_rate
+            yaxis_id: rain
+            color: '#fd7e01'
+            stroke_width: 1
+        yaxis:
+          - id: rain
+          - id: wind
+            opposite: true
+        apex_config:
+          chart:
+            type: area
+            dropShadow:
+              enabled: true
+              enabledOnSeries:
+                - 0
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+              blur: 8
+          grid:
+            show: true
+            borderColor: '#425478'
+            strokeDashArray: 1
+            position: back
+      - type: custom:simple-thermostat
+        entity: climate.otgw_thermostat
+        step_size: 1
+        layout:
+          mode:
+            names: true
+            headings: true
+        header: false
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: thermostat
+                entity: climate.bedroom_ac
+              - type: thermostat
+                entity: climate.living_room_ac
+          - type: entities
+            entities:
+              - entity: sensor.living_room_ac_outside_temperature
+              - entity: sensor.bedroom_ac_daily_cool_energy_consumption
+              - entity: sensor.living_room_ac_daily_cool_energy_consumption
+              - entity: sensor.bedroom_ac_weekly_cool_energy_consumption
+              - entity: sensor.living_room_ac_weekly_cool_energy_consumption
+            show_header_toggle: false
+            state_color: false
+      - type: custom:apexcharts-card
+        all_series_config:
+          stroke_width: 1.5
+          type: line
+          curve: stepline
+          yaxis_id: temperature
+        series:
+          - entity: sensor.otgw_room_temperature
+            color: '#cccccc'
+            curve: smooth
+          - entity: sensor.otgw_room_setpoint
+            color: '#c8000b'
+          - entity: sensor.otgw_relative_modulation_level
+            color: '#c85057'
+            yaxis_id: modulation
+          - entity: input_number.airco_enable_setpoint
+            color: '#007cf5'
+          - entity: input_number.airco_disable_setpoint
+            color: '#62adf5'
+        yaxis:
+          - id: modulation
+          - id: temperature
+            opposite: true
+        apex_config:
+          chart:
+            type: area
+            dropShadow:
+              enabled: true
+              enabledOnSeries:
+                - 0
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+              blur: 8
+          grid:
+            show: true
+            borderColor: '#425478'
+            strokeDashArray: 1
+            position: back
+  - title: Lights
+    path: lights
+    icon: hass:lamp
+    badges: []
+    cards:
+      - type: gauge
+        entity: input_number.light_level
+        max: 4
+        needle: false
+        min: 0
+      - type: entities
+        entities:
+          - entity: switch.bedroom_left_night_light_switch
+            icon: mdi:lamp
+            secondary_info: last-changed
+            name: Left night light
+          - entity: switch.bedroom_right_night_light_switch
+            name: Right night light
+            icon: mdi:lamp
+            secondary_info: last-changed
+        title: Bedroom lights
+        show_header_toggle: true
+        state_color: false
+      - type: entities
+        entities:
+          - entity: switch.hallway_lights_switch_1
+            name: Hallway light
+            icon: mdi:wall-sconce-flat-outline
+            secondary_info: last-changed
+        title: Hallway light
+      - type: entities
+        entities:
+          - entity: switch.hallway_lights_switch_2
+            secondary_info: last-changed
+            name: Porch light
+            icon: mdi:coach-lamp
+          - entity: switch.back_garden_awning_lights_switch_1
+            icon: mdi:coach-lamp
+            name: Awning lights
+            secondary_info: last-changed
+          - entity: switch.shed_light_switch
+            name: Shed light
+            icon: mdi:coach-lamp
+            secondary_info: last-changed
+        title: Outside lights
+        show_header_toggle: true
+        state_color: false
+      - type: entities
+        entities:
+          - entity: switch.living_room_couch_light_switch
+            icon: ''
+            secondary_info: last-updated
+          - entity: switch.living_room_tv_light_switch
+            icon: ''
+            secondary_info: last-updated
+          - entity: switch.living_room_front_light_switch
+            icon: ''
+            secondary_info: last-updated
+          - entity: light.living_room_dinner_table_dimmer
+          - entity: light.kitchen_lights_dimmer
+            secondary_info: last-changed
+        title: Living room lights
+  - title: Waste collection
+    path: waste
+    icon: hass:trash-can
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: picture-entity
+                entity: sensor.afvalwijzer_today_formatted
+                show_state: false
+                state_image:
+                  GFT: /local/afvalwijzer/gft1.png
+                  Papier: /local/afvalwijzer/papier1.png
+                  Restafval: /local/afvalwijzer/rest1.png
+                  PMD: /local/afvalwijzer/pmd1.png
+                  '-': /local/afvalwijzer/geen.png
+              - type: picture-entity
+                entity: sensor.afvalwijzer_tomorrow_formatted
+                show_state: false
+                state_image:
+                  GFT: /local/afvalwijzer/gft1.png
+                  Papier: /local/afvalwijzer/papier1.png
+                  Restafval: /local/afvalwijzer/rest1.png
+                  PMD: /local/afvalwijzer/pmd1.png
+                  '-': /local/afvalwijzer/geen.png
+              - type: picture-entity
+                entity: sensor.afvalwijzer_day_after_tomorrow_formatted
+                show_state: false
+                state_image:
+                  GFT: /local/afvalwijzer/gft1.png
+                  Papier: /local/afvalwijzer/papier1.png
+                  Restafval: /local/afvalwijzer/rest1.png
+                  PMD: /local/afvalwijzer/pmd1.png
+                  '-': /local/afvalwijzer/geen.png
+          - type: custom:auto-entities
+            card:
+              type: glance
+            filter:
+              include:
+                - entity_id: sensor.afvalwijzer_gft
+                - entity_id: sensor.afvalwijzer_papier
+                - entity_id: sensor.afvalwijzer_pmd
+                - entity_id: sensor.afvalwijzer_restafval
+            sort:
+              attribute: days_until_collection_date
+              method: attribute
+              numeric: true
+          - type: entities
+            entities:
+              - entity: sensor.afvalwijzer_next_item
+                name: Next pickup item
+              - entity: input_boolean.waste_moved
+              - entity: input_boolean.waste_reminder
+            show_header_toggle: false
+  - title: Power
+    path: power
+    icon: hass:flash
+    panel: false
+    badges: []
+    cards:
+      - type: gauge
+        entity: sensor.p1_meter_active_power
+        min: 0
+        max: 17250
+        severity:
+          green: 0
+          yellow: 2000
+          red: 4000
+        name: Total power consumption
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.p1_meter_active_power_l1
+            min: 0
+            max: 5750
+          - type: gauge
+            entity: sensor.p1_meter_active_power_l2
+            min: 0
+            max: 5750
+          - type: gauge
+            entity: sensor.p1_meter_active_power_l3
+            min: 0
+            max: 5750
+      - type: history-graph
+        entities:
+          - entity: sensor.p1_meter_total_power_import_t1
+          - entity: sensor.p1_meter_total_power_import_t2
+        hours_to_show: 176
+        refresh_interval: 0
+        title: Power import
+  - title: Security
+    path: security
+    icon: hass:security
+    badges: []
+    cards:
+      - type: alarm-panel
+        states:
+          - arm_home
+          - arm_away
+          - arm_night
+        entity: alarm_control_panel.alarm
+      - type: vertical-stack
+        cards:
+          - type: entities
+            entities:
+              - entity: binary_sensor.attic_bedroom_window_door_state
+                name: Bedroom window
+                secondary_info: last-changed
+              - entity: binary_sensor.attic_velux_window_door_state
+                name: Velux window
+                secondary_info: last-changed
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.bedroom_window_door_state
+                name: Bedroom window
+                secondary_info: last-changed
+              - entity: binary_sensor.office_window_door_state
+                name: Office window
+                secondary_info: last-changed
+              - entity: binary_sensor.shower_window_door_state
+                name: Shower window
+                secondary_info: last-changed
+              - entity: binary_sensor.closet_window_door_state
+                name: Closet window
+                secondary_info: last-updated
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.kitchen_rear_window_door_state
+                name: Rear window (kitchen)
+                secondary_info: last-changed
+              - entity: binary_sensor.living_room_rear_window_door_state
+                name: Rear window (living room)
+                secondary_info: last-changed
+              - entity: binary_sensor.living_room_front_window_door_state
+                name: Front window (living room)
+                secondary_info: last-changed
+              - entity: binary_sensor.hallway_front_door_door_state
+                name: Front door
+                secondary_info: last-changed
+              - entity: binary_sensor.kitchen_rear_door_door_state
+                name: Back door
+                secondary_info: last-changed
+            state_color: true

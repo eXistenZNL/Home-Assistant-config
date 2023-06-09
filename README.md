@@ -6,8 +6,8 @@
 
 This repository contains the complete configuration for my Home Assistant instance:
 * Infrastructure setup based on Docker Compose
-* Dashboards and themes, stored as JSON exports
-* Home assistant configuration files, mostly YAML
+* The dashboard configuration, in YAML format
+* Home assistant configuration files, in YAML format
 
 ## Environment setup
 
@@ -26,6 +26,23 @@ works really well on my mobile phone, which is the main way I interact with Home
 <p align="center">
     <img src="dashboard.png" alt="Example of my dashboard" />
 </p>
+
+## Plugins
+
+My setup has various plugins, which are managed by [HACS](https://hacs.xyz/) aka the Home Assistant Community Store.
+
+### Integrations
+* [Afvalwijzer](https://github.com/xirixiz/homeassistant-afvalwijzer)
+* [Daikin Residential Controller](https://github.com/rospogrigio/daikin_residential)
+* [HACS](https://github.com/hacs/integration)
+
+### Frontend
+* [auto-entities](https://github.com/thomasloven/lovelace-auto-entities)
+* [apexcharts-card](https://github.com/RomRider/apexcharts-card)
+* [card-mod](https://github.com/thomasloven/lovelace-card-mod)
+* [Noctis](https://github.com/aFFekopp/noctis)
+* [Noctis Grey](https://github.com/chaptergy/noctis-grey)
+* [Simple Thermostat](https://github.com/nervetattoo/simple-thermostat)
 
 ## Connected devices
 
