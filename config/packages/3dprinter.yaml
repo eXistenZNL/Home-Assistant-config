@@ -1,0 +1,16 @@
+################################################
+## Packages / 3D Printer
+################################################
+
+################################################
+## Switch
+################################################
+
+command_line:
+  - switch:
+      name: 3D Printer Ledbar
+      command_on: /scripts/octopi-octorelay.sh r1 on
+      command_off: /scripts/octopi-octorelay.sh r1 off
+      command_state: /scripts/octopi-octorelay.sh r1 status
+      value_template: '{{ value == "on" }}'
+      scan_interval: 5

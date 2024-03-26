@@ -1,12 +1,13 @@
-version: '3.2'
-
 services:
   app:
     image: homeassistant/home-assistant:latest
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config:/config
+      - ./scripts:/scripts
       - /home/hawol/.ssh:/root/.ssh
     labels:
       - traefik.enable=true
@@ -19,7 +20,7 @@ services:
     dns: 172.18.0.100
 
   zwavejs2mqtt:
-    image: zwavejs/zwavejs2mqtt:latest
+    image: zwavejs/zwave-js-ui:latest
     restart: unless-stopped
     volumes:
       - zwavejs2mqtt:/usr/src/app/store
@@ -38,7 +39,7 @@ services:
     dns: 172.18.0.100
 
   mqtt:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:2.0.6
     restart: unless-stopped
     volumes:
       - mosquitto-data:/mosquitto/data
